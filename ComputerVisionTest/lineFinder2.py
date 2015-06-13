@@ -3,14 +3,6 @@ from numpy import copy, average, sqrt
 import os
 
 
-im = imread("C:\Temp\Test.jpeg")
-edge = imread("C:\Temp\EdgeBlur.png")
-
-im2 = copy(im)
-
-x,y,z = im2.shape
-count = 0
-
 class lineObject:
     """
     Line object that contains a line within a specific image
@@ -194,24 +186,3 @@ def FindLines(im, minLength, maxLength, resolution, threshold):
                     
     return lines
     
-def PrintToTxt(im, location):
-    y,x = im.shape
-    x = int(x)
-    y = int(y)
-    
-    f = open(location, "w")
-    
-    f.write(str(x) + ' ' + str(y) + '\n')
-    
-    for j in range(y):
-        for i in range(x):
-            f.write(str(int(im[j][i])))
-        f.write('\n')
-    
-    
-    f.close()
-
-
-lines = FindLines(edge, 25, 100, 20, 10)
-
-PrintToTxt(edge, "C:\Users\Andy\Desktop\Sinc\Sinc\ComputerVisionTest\data.txt")
