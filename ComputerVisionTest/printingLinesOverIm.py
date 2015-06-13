@@ -7,7 +7,7 @@ from lineFinder2 import *
 im = imread("C:\Temp\Test.jpeg")
 edge = imread("C:\Temp\EdgeBlur3.png")
 plt.clf()
-lines = FindLines(edge, 25, 120, 20, 10)
+lines = FindLines(edge, 50, 250, 10, 1)
 plt.subplot(121)
 plt.imshow(im)
 

@@ -44,7 +44,6 @@ def Correlation(line, resolution, threshold):
         masterSlope = float(dy)/float(dx)
     except ZeroDivisionError:
         masterSlope = 1000
-        print("masterSlope: ", masterSlope)
         
     
     segmentLength = length / resolution
@@ -66,13 +65,14 @@ def Correlation(line, resolution, threshold):
         dx = end[1] - start[1]
         try:
             slope = dy/float(dx)
+
         except ZeroDivisionError:
-            slope = 1000
-            print("slope: ", slope)
-            print()
+            slope = masterSlope
+
         segmentSlopes.append(slope)
      
-    ave = average(segmentSlopes)   
+    ave = average(segmentSlopes)
+    
     
     if(ave < (masterSlope + threshold) and ave > (masterSlope - threshold)):
 
