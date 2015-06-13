@@ -1,6 +1,15 @@
 from matplotlib.pyplot import imread, imshow, show
-from numpy import copy, average
+from numpy import copy, average, sqrt
+import os
 
+
+im = imread("C:\Temp\Test.jpeg")
+edge = imread("C:\Temp\EdgeBlur.png")
+
+im2 = copy(im)
+
+x,y,z = im2.shape
+count = 0
 
 class lineObject:
     """
@@ -34,7 +43,8 @@ def Correlation(line, resolution, threshold):
     try:
         masterSlope = float(dy)/float(dx)
     except ZeroDivisionError:
-        masterSlope = dy / length
+        masterSlope = 1000
+        print("masterSlope: ", masterSlope)
         
     
     segmentLength = length / resolution
@@ -57,7 +67,9 @@ def Correlation(line, resolution, threshold):
         try:
             slope = dy/float(dx)
         except ZeroDivisionError:
-            slope = (dy * resolution / length)
+            slope = 1000
+            print("slope: ", slope)
+            print()
         segmentSlopes.append(slope)
      
     ave = average(segmentSlopes)   
@@ -96,7 +108,7 @@ def TestGrid(im,x,y):
    
                               
    
-def TestPossibleLine(im,x,y,minLength, maxLength):
+def TestPossibleLine(im,y,x,minLength, maxLength):
     """
     given a bitmap image and a true pixel, it will iterativly call
     TestGrid to find the next pixel in a possible line until TestGrid
@@ -104,10 +116,9 @@ def TestPossibleLine(im,x,y,minLength, maxLength):
     and whether it is straight enough
     """
     linePoints = []
-    flag = True
+    flag, index = TestGrid(im,x,y)
     while(flag):
     
-        flag, index = TestGrid(im,x,y)
         if(flag):
             if(index == 2):
                 linePoints.append([y,x])
@@ -151,14 +162,15 @@ def TestPossibleLine(im,x,y,minLength, maxLength):
                 linePoints.append([y,x])
                 im[y][x] = 2
                 x = x - 1
-    print(len(linePoints))
-    if(len(linePoints) >= minLength and len(linePoints) <= maxLength and Correlation(linePoints,3,5)):
-        for i in linePoints:
-            im[i[0]][i[1]] = 3
-        return lineObject(linePoints)
+        flag, index = TestGrid(im,x,y)
+    if(len(linePoints) != 0):    
+        lineLength = sqrt((linePoints[0][0] - linePoints[-1][0])**2 + (linePoints[0][1] - linePoints[-1][1])**2)
+        if(lineLength >= minLength and lineLength <= maxLength and Correlation(linePoints,3,5)):
+            for i in linePoints:
+                im[i[0]][i[1]] = 3
+            return lineObject(linePoints), im
         
-    else:
-        return "notLine"
+    return "notLine", im
         
         
 
@@ -175,9 +187,31 @@ def FindLines(im, minLength, maxLength, resolution, threshold):
     for j in range(1,y-1):
         for i in range(1,x-1):
             if(im[j][i] == 1):
-                im[j][i] = 2
-                line = TestPossibleLine(im, j, i, minLength, maxLength)
+                im[j][i] = 4
+                line,im = TestPossibleLine(im, j, i, minLength, maxLength)
                 if (line != "notLine"):
                     lines.append(line)
                     
     return lines
+    
+def PrintToTxt(im, location):
+    y,x = im.shape
+    x = int(x)
+    y = int(y)
+    
+    f = open(location, "w")
+    
+    f.write(str(x) + ' ' + str(y) + '\n')
+    
+    for j in range(y):
+        for i in range(x):
+            f.write(str(int(im[j][i])))
+        f.write('\n')
+    
+    
+    f.close()
+
+
+lines = FindLines(edge, 25, 100, 20, 10)
+
+PrintToTxt(edge, "C:\Users\Andy\Desktop\Sinc\Sinc\ComputerVisionTest\data.txt")
