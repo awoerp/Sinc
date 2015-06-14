@@ -81,7 +81,7 @@ def TestGrid(im,x,y):
     """
     given a bitmap image and a true pixel, it searches for another true pixel
     that is adjacent to it.  It then returns a bool telling if a true pixel
-    was found and an integer corresponding to that pixels position.
+    was found and an integer corresponding to that pixel's position.
     """
 
     try:
@@ -109,7 +109,12 @@ def TestPossibleLine(im,y,x,minLength, maxLength, resolution, threshold):
     given a bitmap image and a true pixel, it will iterativly call
     TestGrid to find the next pixel in a possible line until TestGrid
     returns false.  It then check to see if the line is long enough
-    and whether it is straight enough
+    and whether it is straight enough using the correlation function.
+    Additionally, it ensures it is only adding straight points to
+    "linePoints" by checking the mostcommon direction index ( retruned
+    after calling TestGrid) against the most common direction index of
+    the previous numIndexVals number of points.  This mitigates against
+    a problem where the lines would follow doglegs.
     """
     numIndexVals = 4
     linePoints = []
