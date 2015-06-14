@@ -1,6 +1,8 @@
 from matplotlib.pyplot import imread, imshow, show
-from numpy import copy, average, sqrt
+from numpy import copy, average, sqrt, zeros
 import os
+
+edge = imread("C:\Temp\Edge2.png")
 
 
 class lineObject:
@@ -100,17 +102,23 @@ def TestGrid(im,x,y):
    
                               
    
-def TestPossibleLine(im,y,x,minLength, maxLength):
+def TestPossibleLine(im,y,x,minLength, maxLength, curveThreshold):
     """
     given a bitmap image and a true pixel, it will iterativly call
     TestGrid to find the next pixel in a possible line until TestGrid
     returns false.  It then check to see if the line is long enough
     and whether it is straight enough
     """
+    numIndexVals = 4
     linePoints = []
     flag, index = TestGrid(im,x,y)
+    totalIndex = []
+    lastIndex = []
+    for i in range(numIndexVals):
+        lastIndex.append(0)
+    count = 0
     while(flag):
-    
+        count += 1
         if(flag):
             if(index == 2):
                 linePoints.append([y,x])
@@ -154,7 +162,22 @@ def TestPossibleLine(im,y,x,minLength, maxLength):
                 linePoints.append([y,x])
                 im[y][x] = 2
                 x = x - 1
-        flag, index = TestGrid(im,x,y)
+                
+            totalIndex.append(index)
+            lastIndex.insert(0,index)
+            lastIndex.pop()
+            flag, index = TestGrid(im,x,y)
+            if count % 5 == 0:    
+                mostCommonTotal = max(set(totalIndex), key=totalIndex.count)
+                mostCommonLast = max(set(lastIndex), key=lastIndex.count)
+                if mostCommonTotal != mostCommonLast:
+                    flag = False
+                    for i in range(numIndexVals):
+                        linePoints.pop()
+            
+            
+            
+        
     if(len(linePoints) != 0):    
         lineLength = sqrt((linePoints[0][0] - linePoints[-1][0])**2 + (linePoints[0][1] - linePoints[-1][1])**2)
         if(lineLength >= minLength and lineLength <= maxLength and Correlation(linePoints,3,5)):
@@ -180,9 +203,11 @@ def FindLines(im, minLength, maxLength, resolution, threshold):
         for i in range(1,x-1):
             if(im[j][i] == 1):
                 im[j][i] = 4
-                line,im = TestPossibleLine(im, j, i, minLength, maxLength)
+                line,im = TestPossibleLine(im, j, i, minLength, maxLength, 0.25)
                 if (line != "notLine"):
                     lines.append(line)
                     
     return lines
+    
+#lines = FindLines(edge, 50, 500, 20, 2)
     
