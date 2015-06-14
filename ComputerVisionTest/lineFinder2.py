@@ -72,6 +72,8 @@ def Correlation(line, resolution, threshold):
 
         return True
     
+    else:
+        return False
     
     
 
@@ -102,7 +104,7 @@ def TestGrid(im,x,y):
    
                               
    
-def TestPossibleLine(im,y,x,minLength, maxLength, curveThreshold):
+def TestPossibleLine(im,y,x,minLength, maxLength, resolution, threshold):
     """
     given a bitmap image and a true pixel, it will iterativly call
     TestGrid to find the next pixel in a possible line until TestGrid
@@ -180,7 +182,7 @@ def TestPossibleLine(im,y,x,minLength, maxLength, curveThreshold):
         
     if(len(linePoints) != 0):    
         lineLength = sqrt((linePoints[0][0] - linePoints[-1][0])**2 + (linePoints[0][1] - linePoints[-1][1])**2)
-        if(lineLength >= minLength and lineLength <= maxLength and Correlation(linePoints,3,5)):
+        if(lineLength >= minLength and lineLength <= maxLength and Correlation(linePoints,resolution,threshold)):
             for i in linePoints:
                 im[i[0]][i[1]] = 3
             return lineObject(linePoints), im
@@ -203,7 +205,7 @@ def FindLines(im, minLength, maxLength, resolution, threshold):
         for i in range(1,x-1):
             if(im[j][i] == 1):
                 im[j][i] = 4
-                line,im = TestPossibleLine(im, j, i, minLength, maxLength, 0.25)
+                line,im = TestPossibleLine(im, j, i, minLength, maxLength, resolution, threshold)
                 if (line != "notLine"):
                     lines.append(line)
                     
