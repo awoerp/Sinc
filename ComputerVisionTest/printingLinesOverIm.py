@@ -7,7 +7,7 @@ from lineFinder2 import *
 im = imread("C:\Temp\Room.jpeg")
 edge = imread("C:\Temp\RoomEdge.png")
 plt.clf()
-lines = FindLines(edge, 15, 1000, 10, 10)
+lines = FindLines(edge, 15, 1000, 10, 1)
 #plt.subplot(121)
 plt.title("Image 2 With Straight Line Recognition")
 plt.imshow(im)

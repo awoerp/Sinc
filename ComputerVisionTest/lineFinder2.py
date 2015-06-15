@@ -1,5 +1,5 @@
-from matplotlib.pyplot import imread, imshow, show
-from numpy import copy, average, sqrt, zeros
+from matplotlib.pyplot import imread, show
+from numpy import copy, average, sqrt, arctan
 import os
 
 edge = imread("C:\Temp\Edge2.png")
@@ -35,9 +35,14 @@ def Correlation(line, resolution, threshold):
     dy = end[0] - start[0]
     dx = end[1] - start[1]
     try:
-        masterSlope = float(dy)/float(dx)
+        masterAngle = arctan(abs(dy/dx))
+        if (dy/dx < 0 or (dy < 0 and dx < 0)):
+            masterAngle += 3.1415  # pi or 180 degrees
     except ZeroDivisionError:
-        masterSlope = 1000
+        if dy > 0:
+            masterAngle = 1.57 # 90deg in radians
+        else:
+            masterAngle = -1.57
         
     
     segmentLength = length / resolution
@@ -58,17 +63,21 @@ def Correlation(line, resolution, threshold):
         dy = end[0] - start[0]
         dx = end[1] - start[1]
         try:
-            slope = dy/float(dx)
-
+            angle = arctan(abs(dy/dx))
+            if (dy/dx < 0 or (dy < 0 and dx < 0)):
+                angle += 3.1415  # pi or 180 degrees       
         except ZeroDivisionError:
-            slope = masterSlope
+            if dy > 0:
+                angle = 1.57 # 90deg in radians
+            else:
+                angle = -1.57
 
-        segmentSlopes.append(slope)
+        segmentSlopes.append(angle)
      
     ave = average(segmentSlopes)
     
     
-    if(ave < (masterSlope + threshold) and ave > (masterSlope - threshold)):
+    if(ave < (masterAngle + threshold) and ave > (masterAngle - threshold)):
 
         return True
     
